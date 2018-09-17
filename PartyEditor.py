@@ -1,9 +1,11 @@
+# -*- coding: utf-8 -*-
+
 from PySide import QtGui, QtCore
 
 from PySide.QtCore import *
 from PySide.QtGui import *
  
-import FreeCAD,FreeCADGui,Part,Draft
+import FreeCAD, FreeCADGui, Part, Draft
 
 def create(proxy):
     editor = PartyEditor()

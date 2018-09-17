@@ -10,7 +10,7 @@ Party is an experimental workbench with more flexibel primitives. The target is 
 ```
 # Installer 
 
-class Updater():
+class Installer():
 
     def __init__(self):
         self.url =  url = 'https://raw.githubusercontent.com/ageeye/freecad-party/master/'
@@ -60,15 +60,9 @@ class Updater():
             os.write(fd, str.encode(content))
             os.close(fd)
             FreeCAD.Console.PrintMessage(filename + ' [DONE]')
-            
-    def refresh(self):
-        import Party
-        reload(Party)
-        import PartyEditor
-        reload(PartyEditor)
 
 
-u = Updater()
-u.install()
+i = Installer()
+i.install()
 ```
 
