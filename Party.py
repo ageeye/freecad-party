@@ -34,10 +34,11 @@ import CoinNodes
 
 def update():
     update = PartyTools.Update()
-    update.install     # update file list
+    update.install()   # update file list
     reload(PartyTools) # reload file list
-    update.install     # install new files
-    update.refresh     # refresh files
+    update.install()   # install new files
+    update.refresh()   # refresh files
+    return update
 
 def select(obj):
     sel = FreeCADGui.Selection
