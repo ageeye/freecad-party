@@ -176,19 +176,132 @@ class Polyhedron:
         if state:
             self.Type = state
 
+class CoinTemplate:
 
-class ViewProviderPolyhedron:
+    def __init__(self, spGrp):
+        self.__color     = coin.SoBaseColor()
+        self.__drawStyle = coin.SoDrawStyle()
+        spGrp.addChild(self.__color)
+        spGrp.addChild(self.__drawStyle)
+        self.__group = spGrp
+        self.style()
+
+    def style(self, sd={'color': (0.,0.,0.), 'pointSize': 1.0, 'lineWidth': 1.0} ):
+        if 'color' in sd:
+            self.__color.rgb.setValue(sd['color'])
+        if 'pointSize' in sd:
+            self.__drawStyle.pointSize = sd['pointSize']
+        if 'lineWidth' in sd:
+            self.__drawStyle.lineWidth = sd['lineWidth']
+        if 'style' in sd:
+            self.__drawStyle.style = sd['style']
+
+class CoinCoordinate():
+
+    def __init__(self, spGrp):
+        self.__points = coin.SoCoordinate3()
+        spGrp.addChild(self.__points)
+        self.__group = spGrp
+
+    def getPoints(self):
+        return [p.getValue() for p in self.__points.point.getValues()]
+
+    def setPoints(self, pts):
+        num = len(pts)
+        self.__points.point.setValue(0,0,0)
+        self.__points.point.setValues(0, num, pts)    
+
+    def push(self, pt):
+        pts = self.GetPoints()
+        pts.append(pt)
+        self.setPoints(pts)
+
+    def pop(self, i=1):
+        pts = self.GetPoints()
+        r = pts.pop(i)
+        self.setPoints(pts)
+        return r
+
+class CoinPolygon(CoinTemplate):
+
+    def __init__(self, spGrp):
+        CoinTemplate.__init__(self, spGrp)
+        self.__lines = coin.SoIndexedLineSet()
+        spGrp.addChild(self.__lines)    
+        self.style({'style': coin.SoDrawStyle.LINES})
+
+    def coordInit(self):
+        self.__lines.coordIndex.setValue(0)  
+
+    def push(self, num, pt):
+        self.__lines.coordIndex.set1Value(num, pt)
+
+class CoinPoints(CoinTemplate):
+
+    def __init__(self, spGrp):
+        CoinTemplate.__init__(self, spGrp)
+        self.__pointset = coin.SoType.fromName('SoBrepPointSet').createInstance()
+        spGrp.addChild(self.__pointset)
+        self.style({'style': coin.SoDrawStyle.POINTS})
+
+    def setNumPoints(self, num): 
+        self.__pointset.numPoints.setValue(num)
+
+class CoinMarkers(CoinTemplate):
+
+    def __init__(self, spGrp):
+        CoinTemplate.__init__(self, spGrp)
+        self.__markers = coin.SoMarkerSet()
+        spGrp.addChild(self.__markers)
+        self.__markers.startIndex  = 0
+        self.__markers.numPoints   = 1
+        self.__markers.markerIndex = coin.SoMarkerSet.CIRCLE_LINE_9_9
+
+    def setStart(self, i): 
+        self.__markers.startIndex = i
+
+    def setNum(self, n): 
+        self.__markers.numPoints = n
+     
+class CoinGroup():
+
+    def __init__(self):
+        self.group = coin.SoGroup()
+        self.__scale = coin.SoScale()
+        self.group.addChild(self.__scale)
+
+    def addCoinObject(self, cls, name):
+        exec('self.'+name+' = '+cls+'(self.group)')  
+
+    def addCoordinate(self, name='coords'):
+        self.addCoinObject('CoinCoordinate', name)
+      
+    def addPolygon(self, name='polygon'):
+        self.addCoinObject('CoinPolygon', name)
+
+    def addPoints(self, name='points'):
+        self.addCoinObject('CoinPoints', name)
+
+    def addMarkers(self, name='markers'):
+        self.addCoinObject('CoinMarkers', name)
+
+class ViewProviderTemplate:
 
     def __init__(self, vobj):
         vobj.Proxy = self
         self.Object = vobj.Object
-        self.Restore = None
 
     def __getstate__(self):
         return None
 
     def __setstate__(self, state):
         return None
+
+class ViewProviderPolyhedron(ViewProviderTemplate):
+
+    def __init__(self, vobj):
+        ViewProviderTemplate.__init__(self, vobj)
+        self.Restore = None
 
     def getIcon(self):
         if hasattr(self, 'Object'):
@@ -218,43 +331,34 @@ class ViewProviderPolyhedron:
 
     def attach(self, obj):
         self.Object = obj.Object
-        self.scale = coin.SoScale()
-        self.ptncolor = coin.SoBaseColor()
-        self.lncolor = coin.SoBaseColor()
-        self.data=coin.SoCoordinate3()
-        self.face=coin.SoIndexedLineSet()   
-        self.editor = coin.SoGroup()
-        self.editor.addChild(self.scale)
-        self.editor.addChild(self.lncolor)
-        self.editor.addChild(self.data)
-        self.editor.addChild(self.face)
-        style=coin.SoDrawStyle()
-        style.style = coin.SoDrawStyle.POINTS
-        style.pointSize = 3.0
-        self.pointset = coin.SoType.fromName('SoBrepPointSet').createInstance()
-        self.editor.addChild(self.ptncolor)
-        self.editor.addChild(style)
-        self.editor.addChild(self.pointset)
-        self.activePoint = CoinNodes.markerSetNode((1,1,0),coin.SoMarkerSet.CIRCLE_LINE_9_9)
-        self.activePoint.markers.startIndex = 0
-        self.activePoint.markers.numPoints = 1
-        self.editor.addChild(self.activePoint)
-        obj.addDisplayMode(self.editor, 'Editor')
+        self.editor = CoinGroup()
+        self.editor.addCoordinate()
+        self.editor.addPoints()
+        self.editor.addPolygon()
+        self.editor.addMarkers()
+        self.editor.points.style({'color': (255, 255, 0), 'pointSize': 3.0})
+        self.editor.polygon.style({'color': (0, 0, 0), 'lineWidth': 1.0})
+        self.editor.markers.style({'color': (0, 0, 255)})
+        obj.addDisplayMode(self.editor.group, 'Editor')
 
     def updateData(self, fp, prop):  
-        self.ptncolor.rgb.setValue(255, 255, 0)
-        self.lncolor.rgb.setValue(0, 0, 0)
         if prop == 'Shape':
-            self.pointset.numPoints.setValue(len(fp.Points))
-            for i, v in enumerate(fp.Points):
-                self.data.point.set1Value(i, v.x, v.y, v.z)
-            self.activePoint.markers.startIndex = fp.Vertex - 1
+            ed = self.editor
+            ed.points.setNumPoints(len(fp.Points))
+            ed.coords.setPoints([[v.x, v.y, v.z] for v in fp.Points])
+            ed.polygon.coordInit()
+            ed.markers.setStart(fp.Vertex - 1)
             cnt=0
             for mtx in fp.Proxy.getPolyhedronMatrix(fp):
                 for v in mtx:
-                    self.face.coordIndex.set1Value(cnt, v)
-                    cnt+=1 
-                self.face.coordIndex.set1Value(cnt, -1)
-                cnt+=1
+                    ed.polygon.push(cnt, v)
+                    cnt+=1
+                if len(mtx)==3:
+                    ed.polygon.push(cnt, mtx[0])
+                    cnt+=1
+                if len(mtx)==4:
+                    ed.polygon.push(cnt, -1)
+                    cnt+=1
+
 
 
