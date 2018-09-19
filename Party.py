@@ -30,7 +30,6 @@
 
 import FreeCAD, FreeCADGui, PartyTools
 from pivy import coin
-import CoinNodes
 
 def update():
     update = PartyTools.Update()
