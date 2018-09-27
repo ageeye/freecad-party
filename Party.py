@@ -30,6 +30,7 @@
 
 import FreeCAD, FreeCADGui, PartyTools
 from pivy import coin
+import CoinNodes
 
 def update():
     update = PartyTools.Update()
@@ -352,12 +353,10 @@ class ViewProviderPolyhedron(ViewProviderTemplate):
                 for v in mtx:
                     ed.polygon.push(cnt, v)
                     cnt+=1
-                if len(mtx)==3:
-                    ed.polygon.push(cnt, mtx[0])
-                    cnt+=1
-                if len(mtx)==4:
-                    ed.polygon.push(cnt, -1)
-                    cnt+=1
+                ed.polygon.push(cnt, mtx[0])
+                cnt+=1
+                ed.polygon.push(cnt, -1)
+                cnt+=1
 
 
 
