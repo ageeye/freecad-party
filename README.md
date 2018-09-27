@@ -5,7 +5,18 @@ Party
 
 Party is an experimental workbench with more flexibel primitives. The target is to integrate the features in future to Part. The first step is to development a prototype with pure python...
 
-# 2. Install
+Motivation: 
+
+# 2. Features
+
+Tetrahedron - Any point is editable.
+Hexahedron  - Any point is editable.
+
+
+# 3. Install
+
+Currently the Party WB is not suporrted by the FreeCAD's addon manager. That's why the simplest way is to use following script to install the workbech. The script cloning the git repository to your personal FreeCAD folder. 
+
 
 ```
 # Installer 
@@ -64,5 +75,14 @@ class Installer():
 
 i = Installer()
 i.install()
+```
+
+# 4. Install
+
+To get the updates from the git repository use this script:
+
+```
+import Party
+Party.update()
 ```
 
