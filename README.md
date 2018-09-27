@@ -10,6 +10,7 @@ Motivation: [Freecad Forum](https://forum.freecadweb.org/viewtopic.php?f=13&t=30
 # 2. Features
 
 Tetrahedron - Any point is editable.
+
 Hexahedron  - Any point is editable.
 
 
