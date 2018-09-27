@@ -95,7 +95,7 @@ class Polyhedron:
         self.editableXYZ = True
         if obj.Count > 0:
             self.initPolyhedron()
-            self.updateXYZ()
+            self.updateXYZ(obj)
 
     def getPolyhedronType(self, obj):
         return Polyhedron.forming.get(obj.Count)
@@ -134,9 +134,8 @@ class Polyhedron:
                         shellList.append(theFace)                      
                 obj.Shape = Part.Solid(Part.Shell(shellList))     
 
-    def updateXYZ(self):
-        if hasattr(self, 'Object'):
-            obj = self.Object
+    def updateXYZ(self, obj):
+        if hasattr(self, 'editableXYZ'):
             if obj.Vertex <=0:
                 self.editableXYZ = False 
             if self.editableXYZ:
@@ -153,13 +152,13 @@ class Polyhedron:
             elif obj.Vertex > cv:
                  obj.Vertex = cv
             if cv > 0:
-                self.updateXYZ()
+                self.updateXYZ(obj)
         if prop == 'Points':
             self.Type  = self.getPolyhedronType(obj)
             obj.Count = len(obj.Points)
             if obj.Vertex > obj.Count:
                 obj.Vertex = obj.Count
-            self.updateXYZ()
+            self.updateXYZ(obj)
         if (prop == 'X') | (prop == 'Y') | (prop == 'Z'):
             if hasattr(obj,'X') and hasattr(obj,'Y') and hasattr(obj,'Z') and hasattr(obj, 'Points'):
                 if len(obj.Points) > 0:
@@ -170,11 +169,12 @@ class Polyhedron:
                     self.editableXYZ = True
 
     def __getstate__(self):
-        return self.Type
+        return { 'Type': self.Type, 'editXYZ': self.editableXYZ }
 
     def __setstate__(self,state):
         if state:
-            self.Type = state
+            self.Type = state['Type']
+            self.editableXYZ = state['editXYZ']
 
 class CoinTemplate:
 
@@ -331,6 +331,7 @@ class ViewProviderPolyhedron(ViewProviderTemplate):
 
     def attach(self, obj):
         self.Object = obj.Object
+        self.Object.setEditorMode('Count', 1)
         self.editor = CoinGroup()
         self.editor.addCoordinate()
         self.editor.addPoints()
