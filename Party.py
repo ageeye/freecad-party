@@ -30,7 +30,6 @@
 
 import FreeCAD, FreeCADGui, PartyTools
 from pivy import coin
-import CoinNodes
 
 def update():
     update = PartyTools.Update()
@@ -58,6 +57,32 @@ def makeHexahedron():
     Polyhedron(obj, 8)
     ViewProviderPolyhedron(obj.ViewObject)
     return obj
+
+def makeSelector():
+    '''makeSelector'''
+    obj=FreeCAD.ActiveDocument.addObject('Part::FeaturePython','Selector')
+    Selector(obj)
+    ViewProviderSelector(obj.ViewObject)
+    sel = FreeCADGui.Selection
+    obj.Objects = sel.getSelection()
+    return obj
+
+class Selector:
+
+    def __init__(self, obj, size=0):
+        self.Object = obj
+        obj.Proxy = self
+        obj.addProperty('App::PropertyLinkList','Objects','Selector', 'The objects included in this selector')
+
+    def execute(self, obj):
+        return None
+
+    def __getstate__(self):
+        return None
+
+    def __setstate__(self, state):
+        return None
+
 
 class Polyhedron:
     '''Text...'''
@@ -296,6 +321,24 @@ class ViewProviderTemplate:
 
     def __setstate__(self, state):
         return None
+
+class ViewProviderSelector(ViewProviderTemplate):
+
+    def __init__(self, vobj):
+        ViewProviderTemplate.__init__(self, vobj)
+
+    def getIcon(self):
+        return PartyTools.Settings.icon('Selector.svg')
+
+    def doubleClicked(self,vobj):
+        sel = FreeCADGui.Selection
+        sel.clearSelection()
+        for obj in self.Object.Objects:
+            sel.addSelection(obj)
+        return True
+
+    def attach(self, obj):
+        self.Object = obj.Object
 
 class ViewProviderPolyhedron(ViewProviderTemplate):
 

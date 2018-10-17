@@ -32,6 +32,33 @@ class cmdPolyhedron():
         doc.recompute()
         FreeCADGui.Selection.clearSelection()
 
+class cmdSelector():
+    'Create a selector.'
+
+    def GetResources(self):
+        import PartyTools
+        return {'Pixmap'  : PartyTools.Settings.icon('Selector.svg'),
+                'MenuText': 'Selector',
+                'ToolTip' : 'Create a selector.'}
+
+    def IsActive(self):
+        if FreeCADGui.ActiveDocument:
+            return True
+        else:
+            return False
+
+    def Activated(self):
+        self.proceed()
+
+    def proceed(self):
+        FreeCADGui.addModule('Party')
+        doc = FreeCAD.ActiveDocument
+        doc.openTransaction('Selector')
+        FreeCADGui.doCommand('Party.makeSelector()')
+        doc.commitTransaction()
+        doc.recompute()
+        FreeCADGui.Selection.clearSelection()
+
 class cmdTetrahedron(cmdPolyhedron):
     'Create a tetrahedron.'
 
@@ -46,4 +73,5 @@ class cmdHexahedron(cmdPolyhedron):
 
 FreeCADGui.addCommand('makeTetrahedron', cmdTetrahedron()) 
 FreeCADGui.addCommand('makeHexahedron', cmdHexahedron()) 
+FreeCADGui.addCommand('makeSelector', cmdSelector()) 
 
