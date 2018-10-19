@@ -24,7 +24,7 @@ class Settings(Singleton):
 class Update(Singleton):
 
     def __init__(self):
-        self.url =  url = 'https://raw.githubusercontent.com/ageeye/freecad-party/master/'
+        self.url = 'https://raw.githubusercontent.com/ageeye/freecad-party/master/'
         self.files = ['InitGui.py', 'Party.py', 'PartyCmds.py','PartyEditor.py', 'PartyTools.py', 'README.md', 'icons/Party.svg', 'icons/Tree_Part_Hexahedron.svg', 'icons/Tree_Part_Polyhedron.svg', 'icons/Tree_Part_Tetrahedron.svg']
 
     def install(self):
