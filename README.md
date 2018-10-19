@@ -20,34 +20,41 @@ Currently the Party WB is not suporrted by the FreeCAD's addon manager. That's w
 
 
 ```
-# Installer 
+# install
+
 
 class Installer():
 
     def __init__(self):
-        self.url =  url = 'https://raw.githubusercontent.com/ageeye/freecad-party/master/'
-        self.files = ['InitGui.py', 'Party.py', 'PartyCmds.py','PartyEditor.py', 'PartyTools.py', 'README.md', 'icons/Party.svg', 'icons/Tree_Part_Hexahedron.svg', 'icons/Tree_Part_Polyhedron.svg', 'icons/Tree_Part_Tetrahedron.svg']
+        self.url = \
+            'https://raw.githubusercontent.com/ageeye/freecad-party/master/'
+        self.files = [
+            'InitGui.py', 'Party.py', 'PartyCmds.py', 'PartyEditor.py',
+            'PartyTools.py', 'README.md', 'icons/Party.svg',
+            'icons/Tree_Part_Hexahedron.svg', 'icons/Tree_Part_Polyhedron.svg',
+            'icons/Tree_Part_Tetrahedron.svg']
 
     def install(self):
-        import FreeCAD, os
+        import FreeCAD
+        import os
 
-        if (sys.version_info > (3, 0)):  #py3
+        if (sys.version_info > (3, 0)):
             import urllib
-            from urllib import request, error 
-    
+            from urllib import request, error
+
             def requ(u):
                 req = request.Request(u)
                 response = request.urlopen(req)
                 return response.read().decode('utf-8')
-            
-        else:  #py2
+
+        else:
             import urllib2
             from urllib2 import Request, urlopen, URLError, HTTPError
-                                
-        def requ(u):
-            req = Request(u)
-            response = urlopen(req)
-            return response.read()
+
+            def requ(u):
+                req = Request(u)
+                response = urlopen(req)
+                return response.read()
 
         # macro path
         mpath = os.path.join(FreeCAD.ConfigGet('UserAppData'), 'Mod')
@@ -64,11 +71,11 @@ class Installer():
 
         for f in self.files:
             content = requ(self.url + f)
-            if f[:6]=='icons/':
+            if f[:6] == 'icons/':
                 filename = os.path.join(ipath, f[6:])
-            else: 
+            else:
                 filename = os.path.join(ppath, f)
-            fd = os.open(filename, os.O_RDWR|os.O_CREAT )
+            fd = os.open(filename, os.O_RDWR | os.O_CREAT)
             os.write(fd, str.encode(content))
             os.close(fd)
             FreeCAD.Console.PrintMessage(filename + ' [DONE]')
@@ -76,6 +83,7 @@ class Installer():
 
 i = Installer()
 i.install()
+
 ```
 
 # 4. Update
