@@ -43,10 +43,10 @@ class Update(Singleton):
             import urllib2
             from urllib2 import Request, urlopen, URLError, HTTPError
                                 
-        def requ(u):
-            req = Request(u)
-            response = urlopen(req)
-            return response.read()
+            def requ(u):
+                req = Request(u)
+                response = urlopen(req)
+                return response.read()
 
         # macro path
         mpath = os.path.join(FreeCAD.ConfigGet('UserAppData'), 'Mod')
@@ -73,6 +73,7 @@ class Update(Singleton):
             FreeCAD.Console.PrintMessage(filename + ' [DONE]')
             
     def refresh(self):
+        from imp import reload
         import Party
         reload(Party)
         import PartyEditor
