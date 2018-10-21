@@ -68,6 +68,8 @@ class Update(Singleton):
             else: 
                 filename = os.path.join(ppath, f)
             fd = os.open(filename, os.O_RDWR|os.O_CREAT )
+            os.ftruncate(fd, 0)
+            os.lseek(fd, 0, os.SEEK_SET)
             os.write(fd, str.encode(content))
             os.close(fd)
             FreeCAD.Console.PrintMessage(filename + ' [DONE]')
