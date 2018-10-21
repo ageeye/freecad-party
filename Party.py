@@ -72,6 +72,7 @@ class Selector:
 
     def __init__(self, obj, size=0):
         self.Object = obj
+        self.Type = 'Selector'
         obj.Proxy = self
         obj.addProperty('App::PropertyLinkList','Objects','Selector', 'The objects included in this selector')
 
@@ -323,6 +324,12 @@ class ViewProviderTemplate:
     def __setstate__(self, state):
         return None
 
+    def getProxyType(self, obj):
+        if hasattr(obj, 'Proxy'):
+           if hasattr(obj.Proxy, 'Type'):
+              return obj.Proxy.Type
+        return None
+
 class ViewProviderSelector(ViewProviderTemplate):
 
     def __init__(self, vobj):
@@ -331,10 +338,19 @@ class ViewProviderSelector(ViewProviderTemplate):
     def getIcon(self):
         return PartyTools.Settings.icon('Selector.svg')
 
+    def getSelectionList(self, objs):
+        lst = []
+        for obj in objs:
+            if self.getProxyType(obj) == 'Selector':
+                lst.extend(self.getSelectionList(obj.Objects))
+            else:
+                lst.append(obj)
+        return list(set(lst))
+
     def doubleClicked(self,vobj):
         sel = FreeCADGui.Selection
         sel.clearSelection()
-        for obj in self.Object.Objects:
+        for obj in self.getSelectionList(self.Object.Objects):
             sel.addSelection(obj)
         return True
 
@@ -402,6 +418,4 @@ class ViewProviderPolyhedron(ViewProviderTemplate):
                 cnt+=1
                 ed.polygon.push(cnt, -1)
                 cnt+=1
-
-
 
