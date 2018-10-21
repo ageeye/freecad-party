@@ -357,6 +357,9 @@ class ViewProviderSelector(ViewProviderTemplate):
     def attach(self, obj):
         self.Object = obj.Object
 
+    def claimChildren(self):
+        return self.Object.Objects
+
 class ViewProviderPolyhedron(ViewProviderTemplate):
 
     def __init__(self, vobj):
