@@ -32,7 +32,9 @@ class Installer():
             'InitGui.py', 'Party.py', 'PartyCmds.py', 'PartyEditor.py',
             'PartyTools.py', 'README.md', 'icons/Party.svg',
             'icons/Tree_Part_Hexahedron.svg', 'icons/Tree_Part_Polyhedron.svg',
-            'icons/Tree_Part_Tetrahedron.svg', 'icons/Selector.svg']
+            'icons/Tree_Part_Tetrahedron.svg', 'icons/Selector.svg',
+            'icons/Tree_ItemDown.svg', 'icons/Tree_ItemUp.svg',
+            'icons/Tree_expand_all.svg']
 
     def install(self):
         import FreeCAD
