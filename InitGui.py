@@ -10,7 +10,7 @@ class PartyWB ( Workbench ):
     def Initialize(self):
         "This function is executed when FreeCAD starts"
         import PartyCmds
-        self.list = ['makeHexahedron', 'makeTetrahedron', 'makeSelector'] # A list of command names created in the line above
+        self.list = ['makeHexahedron', 'makeTetrahedron', 'makeSelector', 'setTreeItemUp', 'setTreeItemDown']
         self.appendToolbar('Primitives',self.list) # creates a new toolbar with your commands
 
     def Activated(self):
