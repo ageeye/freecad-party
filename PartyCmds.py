@@ -57,13 +57,13 @@ class cmdTreeMoveItem():
                 tree = t
 
         if tree:
-            top = tree.topLevelItem(0).child(0)
             item = tree.currentItem()
+            parent = item.parent()
             row = tree.currentIndex().row()
-            if self.limes(row, top.childCount()) and top.indexOfChild(item) >= 0:
-                child = top.takeChild(row)
+            if self.limes(row, parent.childCount()) and parent.indexOfChild(item) >= 0:
+                child = parent.takeChild(row)
                 if child is item:
-                    top.insertChild(row + self.step(), item)
+                    parent.insertChild(row + self.step(), item)
                     tree.setCurrentItem(item)
                 else:
                     FreeCAD.Console.PrintError('take child fails..')
